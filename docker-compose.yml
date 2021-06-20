@@ -1,0 +1,46 @@
+version: '3.7'
+
+
+services:
+  web:
+    restart: always
+    build: .
+    command: python /work/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/work
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+      - redis
+      # - rabbitmq
+  db:
+    image: postgres:12
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: "db"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      # POSTGRES_HOST_AUTH_METHOD: "trust"
+  redis:
+    image: redis:alpine
+  rabbitmq:
+    image: rabbitmq:latest
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+    restart: on-failure
+  celery:
+    build: .
+    command: celery -A work worker -l info --pool=solo
+    volumes:
+      - .:/work
+    depends_on:
+      - web
+      # - db
+      - redis
+      - rabbitmq
+
+volumes:
+  postgres_data:
