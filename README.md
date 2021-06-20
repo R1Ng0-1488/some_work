@@ -2,6 +2,6 @@
 Function modeling dashboard.
 ============================
 
-This application makes chart when you enter the name of function.
+This application makes a chart when you enter the name of function.
 
 ### To start this project you need is to input this command: docker-compose up
